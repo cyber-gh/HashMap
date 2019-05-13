@@ -4,6 +4,7 @@
 #include <iostream>
 #include "HashNode.h"
 #include "HashMap.h"
+#include <assert.h>
 
 using namespace std;
 
@@ -35,14 +36,17 @@ int main(){
 	HashMap<int, string, 10, MyKeyHash> cpy;
 	
 	//hmap.put(1, "1");
-	hmap.put(2, "2");
-	hmap.put(12, "3");
-	hmap.put(22, "4");
+	hmap.add(2, "2");
+	hmap.add(12, "3");
+	hmap.add(22, "4");
 	//hmap.put(3, "3");
 	cpy = hmap;
 	string value;
 	cpy.get(2, value);
 	value = cpy[2];
+
+	assert( value == "2");
+	
 	//cout << value;
 	cout << endl;
 	vector<string> r = hmap.getAllValues(2);

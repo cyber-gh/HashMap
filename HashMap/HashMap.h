@@ -1,44 +1,41 @@
 #pragma once
 #include "HashNode.h"
+#include "DefaultHashFunc.h"
 
 
-template <typename K, typename V, size_t tableSize, typename F>
-class HashMap
-{
+template <typename K, typename V, size_t SIZE, typename F = DefaultHashFunc<K>>
+class HashMap{
 private:
 	
-	HashNode<K, V>* table[tableSize];
+	HashNode<K, V>* arr[SIZE];
 	unsigned int size;
 	F hashFunc;
 	
 
 public:
-	HashMap() :
-		table(),
-		hashFunc(),
-		size(tableSize) {
-		for (int i = 0; i < tableSize; i++) table[i] = nullptr;
+	HashMap() : arr(), hashFunc(), size(SIZE) {
+		for (int i = 0; i < SIZE; i++) arr[i] = nullptr;
 	}
 
 	~HashMap(){
-		for (size_t i = 0; i < tableSize; ++i) {
-			delete table[i];
-			table[i] = nullptr;
+		for (size_t i = 0; i < SIZE; ++i) {
+			delete arr[i];
+			arr[i] = nullptr;
 		}
 	}
 
-	HashMap(const HashMap<K,V,tableSize,F> & other):table() {
-		for (int i = 0; i < tableSize; i++) {
-			if (other.table[i] != nullptr) {
-				HashNode<K, V>* tmp = new HashNode<K, V>(*other.table[i]);
-				table[i] = tmp;
+	HashMap(const HashMap<K,V,SIZE,F> & other):arr() {
+		for (int i = 0; i < SIZE; i++) {
+			if (other.arr[i] != nullptr) {
+				HashNode<K, V>* tmp = new HashNode<K, V>(*other.arr[i]);
+				arr[i] = tmp;
 			}
-				
 		}
 		hashFunc = other.hashFunc;
 	} 
-	HashMap& operator=( HashMap<K, V, tableSize, F> other) {
-		std::swap(table, other.table);
+
+	HashMap& operator=( HashMap<K, V, SIZE, F> other) {
+		std::swap(arr, other.arr);
 		hashFunc = other.hashFunc;
 		return *this;
 	}
@@ -49,10 +46,10 @@ public:
 		return value;
 	}
 
-	std::vector<V> getAllValues(const K key) {
+	std::vector<V> getAllValues(const K key) const  {
 		std::vector<V> rs;
 		unsigned long hashValue = hashFunc(key);
-		HashNode<K, V>* entry = table[hashValue];
+		HashNode<K, V>* entry = arr[hashValue];
 
 		while (entry != nullptr) {
 			if (entry->getKey() == key) {
@@ -61,33 +58,27 @@ public:
 
 			entry = entry->getNext();
 		}
-
 		return rs;
-
 	}
 
-	bool get(const K& key, V& value)
-	{
+	bool get(const K& key, V& value) const {
 		unsigned long hashValue = hashFunc(key);
-		HashNode<K, V>* entry = table[hashValue];
+		HashNode<K, V>* entry = arr[hashValue];
 
 		while (entry != nullptr) {
 			if (entry->getKey() == key) {
 				value = entry->getValue();
 				return true;
 			}
-
 			entry = entry->getNext();
 		}
-
 		return false;
 	}
 
-	void put(const K& key, const V& value)
-	{
+	void add(const K& key, const V& value){
 		unsigned long hashValue = hashFunc(key);
 		HashNode<K, V>* prev = nullptr;
-		HashNode<K, V>* entry = table[hashValue];
+		HashNode<K, V>* entry = arr[hashValue];
 
 		while (entry != nullptr && entry->getKey() != key) {
 			prev = entry;
@@ -98,7 +89,7 @@ public:
 			entry = new HashNode<K, V>(key, value);
 
 			if (prev == nullptr) {
-				table[hashValue] = entry;
+				arr[hashValue] = entry;
 				entry->setIsFirst(true);
 			}
 			else {
@@ -111,17 +102,16 @@ public:
 		}
 	}
 
-	int distinctKeys() {
+	int distinctKeys() const {
 		int rs = 0;
-		for (int i = 0; i < tableSize; i++) if (table[i] != nullptr) rs++;
+		for (int i = 0; i < SIZE; i++) if (arr[i] != nullptr) rs++;
 		return rs;
 	}
 
-	void remove(const K& key)
-	{
+	void remove(const K& key){
 		unsigned long hashValue = hashFunc(key);
 		HashNode<K, V>* prev = nullptr;
-		HashNode<K, V>* entry = table[hashValue];
+		HashNode<K, V>* entry = arr[hashValue];
 
 		while (entry != nullptr && entry->getKey() != key) {
 			prev = entry;
@@ -134,7 +124,7 @@ public:
 		}
 		else {
 			if (prev == nullptr) {
-				table[hashValue] = entry->getNext();
+				arr[hashValue] = entry->getNext();
 			}
 			else {
 				prev->setNext(entry->getNext());
@@ -145,8 +135,8 @@ public:
 	}
 	friend std::ostream& operator<<(std::ostream& out, const HashMap& hmap) {
 		for (int i = 0; i < hmap.size; i++) {
-			if (hmap.table[i] != nullptr) {
-				HashNode<K, V>* it = hmap.table[i];
+			if (hmap.arr[i] != nullptr) {
+				HashNode<K, V>* it = hmap.arr[i];
 				while (it != nullptr) {
 					out << it->getKey() << " : " << it->getValue() << std::endl;
 					it = it->getNext();

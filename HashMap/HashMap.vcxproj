@@ -156,6 +156,7 @@
     <ClCompile Include="HashNode.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DefaultHashFunc.h" />
     <ClInclude Include="HashMap.h" />
     <ClInclude Include="HashNode.h" />
   </ItemGroup>

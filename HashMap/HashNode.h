@@ -2,77 +2,77 @@
 #include <vector>
 
 template <typename K, typename V>
-class HashNode
-{
+class HashNode{
+private:
+	K key;
+	V value;
+	bool isFirst;
+	HashNode* next;
+
+
 public:
-	HashNode(const K& key, const V& value, bool isFirst = false) :
-		_key(key), _value(value), _next(nullptr), _isFirst(isFirst)
-	{
+	HashNode(const K& __key, const V& __value, bool __isFirst = false) :
+		key(__key), value(__value), next(nullptr), isFirst(__isFirst)
+	{}
+
+	K getKey() const {
+		return key;
 	}
 
-	K getKey() const
-	{
-		return _key;
+	V getValue() const {
+		return value;
 	}
 
-	V getValue() const
-	{
-		return _value;
-	}
-
-	void setValue(V value)
-	{
-		_value = value;
+	void setValue(V value){
+		value = value;
 	}
 
 	HashNode* getNext() const
 	{
-		return _next;
+		return next;
 	}
 
-	void setNext(HashNode* next)
-	{
-		_next = next;
+	void setNext(HashNode* __next) {
+		next = __next;
 	}
 
-	void setNext(HashNode next)
-	{
-		_next = new HashNode(next);
+	void setNext(HashNode __next) {
+		next = new HashNode(__next);
 	}
 
 	HashNode(const HashNode& other) {
-		_key = other.getKey();
-		_value = other.getValue();
+		key = other.getKey();
+		value = other.getValue();
 		if (other.getNext() == nullptr) {
-			_next = nullptr;
+			next = nullptr;
 		}
 		else {
-			HashNode<K, V>* it = new HashNode<K, V>(other._next->_key, other._next->_value);
+			HashNode<K, V>* it = new HashNode<K, V>(other.next->key, other.next->value);
 			HashNode<K, V>* curr = it;
-			_next = curr;
-			it = it->_next;
+			next = curr;
+			it = it->next;
 			while (it != nullptr) {
 				
-				HashNode<K, V>* tmp = new HashNode<K, V>(it->_key, it->_value);
-				curr->_next = tmp;
+				HashNode<K, V>* tmp = new HashNode<K, V>(it->key, it->value);
+				curr->next = tmp;
 				curr = tmp;
-				it = it->_next;
+				it = it->next;
 			}
 		}
 	}
 	HashNode& operator=(const HashNode& other) {
-		std::swap(_key, other._key);
-		std::swap(_value, other._value);
-		std::swap(_next, other._next);
+		std::swap(key, other.key);
+		std::swap(value, other.value);
+		std::swap(next, other.next);
 	}
 
 	~HashNode() {
-		if (!_isFirst) return;
-		HashNode<K, V>* it = _next;
+		if (!isFirst) return;
+		HashNode<K, V>* it = next;
 		HashNode<K, V>* prev = it;
 		while (it != nullptr) {
 			prev = it;
-			it = it->_next;
+			it = it->next;
 			delete prev;
 			prev = nullptr;
 		}
@@ -82,21 +82,14 @@ public:
 		std::vector<V> rs;
 		HashNode<K, V>* it = this;
 		while (it != nullptr) {
-			rs.push_back(it->_value);
-			it = it->_next;
+			rs.push_back(it->value);
+			it = it->next;
 		}
 		return rs;
 	}
 
 	void setIsFirst(bool val) {
-		_isFirst = val;
+		isFirst = val;
 	}
 
-private:
-	// key-value pair
-	K _key;
-	V _value;
-	bool _isFirst;
-	HashNode* _next;
-	
 };
