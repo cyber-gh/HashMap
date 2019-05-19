@@ -44,6 +44,12 @@ int main(){
 	string value;
 	cpy.get(2, value);
 	value = cpy[2];
+	try {
+		value = cpy[100];
+	}
+	catch (std::out_of_range exp) {
+		cout << exp.what();
+	}
 
 	assert( value == "2");
 	
